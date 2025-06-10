@@ -1,0 +1,34 @@
+# Logs
+*.log
+
+# NodeJS
+Backend/API/node_modules/
+Backend/API/.env
+
+# Go
+Backend/Recolector/go.sum
+Backend/Recolector/go.mod~
+Backend/Recolector/bin/
+Backend/Recolector/recolector
+
+# Archivos compilados de módulos del kernel
+Modules/**/*.ko
+Modules/**/*.mod.*
+Modules/**/Module.symvers
+Modules/**/*.o
+Modules/**/*.order
+Modules/**/*.cmd
+Modules/**/*.tmp_versions
+
+# Archivos swap/backup de editores
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Archivos generados de sistema
+*.out
+*.exe
+
+
