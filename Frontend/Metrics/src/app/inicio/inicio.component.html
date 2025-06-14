@@ -1,0 +1,12 @@
+<div style="text-align:center">
+  <mat-toolbar color="primary" style="border-radius: 12px 12px 0 0;">
+        <span>Metrics</span>
+      </mat-toolbar>
+  <apx-chart
+    #chart
+    [series]="chartOptions.series"
+    [chart]="chartOptions.chart"
+    [title]="chartOptions.title"
+    [xaxis]="chartOptions.xaxis">
+  </apx-chart>
+</div>
