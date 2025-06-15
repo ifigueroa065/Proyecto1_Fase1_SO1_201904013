@@ -68,44 +68,56 @@ export class InicioComponent implements OnInit, OnDestroy {
     clearInterval(this.intervalId);
   }
 
-  loadMetrics(): void {
-    this.metricsService.getUltimaMetrica().subscribe({
-      next: (data: Metrics) => {
-        const { ram, cpu } = data;
+ loadMetrics(): void {
+  this.metricsService.getUltimaMetrica().subscribe({
+    next: (data: any) => {
+      console.log('Respuesta cruda de la API:', data);
 
-        const ramUso = Number(ram.uso);
-        const ramTotal = Number(ram.total);
-        const ramPorcentaje = ramTotal > 0
-          ? +(ramUso / ramTotal * 100).toFixed(2)
-          : 0;
-
-        const cpuUso = Number(cpu.uso);
-        const cpuTotal = Number(cpu.total);
-        const cpuPorcentaje = cpuTotal > 0
-          ? +(cpuUso / cpuTotal * 100).toFixed(2)
-          : 0;
-
-        this.ramChartOptions = {
-          ...this.ramChartOptions,
-          series: [ramPorcentaje, 100 - ramPorcentaje],
-          title: {
-            text: `RAM: ${ramPorcentaje}% en uso`
-          }
-        };
-
-        this.cpuChartOptions = {
-          ...this.cpuChartOptions,
-          series: [cpuPorcentaje, 100 - cpuPorcentaje],
-          title: {
-            text: `CPU: ${cpuPorcentaje}% en uso`
-          }
-        };
-
-        this.cdr.detectChanges();
-      },
-      error: (err) => {
-        console.error('Error al cargar métricas', err);
+      // Validación de estructura
+      if (!data || typeof data !== 'object' || !('cpu_total' in data)) {
+        console.warn('Estructura inválida:', data);
+        return;
       }
-    });
-  }
+
+      const ramTotal = Number(data.ram_total);
+      const ramUso = Number(data.ram_uso);
+      const cpuTotal = Number(data.cpu_total);
+      const cpuUso = Number(data.cpu_uso);
+
+      if (
+        isNaN(ramTotal) || isNaN(ramUso) ||
+        isNaN(cpuTotal) || isNaN(cpuUso) ||
+        ramTotal === 0 || cpuTotal === 0
+      ) {
+        console.warn('Datos incompletos o inválidos recibidos:', data);
+        return;
+      }
+
+      const ramPorcentaje = +(ramUso / ramTotal * 100).toFixed(2);
+      const cpuPorcentaje = +(cpuUso / cpuTotal * 100).toFixed(2);
+
+      this.ramChartOptions = {
+        ...this.ramChartOptions,
+        series: [ramPorcentaje, 100 - ramPorcentaje],
+        title: {
+          text: `RAM: ${ramPorcentaje}% en uso`
+        }
+      };
+
+      this.cpuChartOptions = {
+        ...this.cpuChartOptions,
+        series: [cpuPorcentaje, 100 - cpuPorcentaje],
+        title: {
+          text: `CPU: ${cpuPorcentaje}% en uso`
+        }
+      };
+
+      this.cdr.detectChanges();
+    },
+    error: (err) => {
+      console.error('Error al cargar métricas', err);
+    }
+  });
+}
+
 }
