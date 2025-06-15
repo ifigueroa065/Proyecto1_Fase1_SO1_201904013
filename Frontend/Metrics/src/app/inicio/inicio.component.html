@@ -1,12 +1,23 @@
-<div style="text-align:center">
-  <mat-toolbar color="primary" style="border-radius: 12px 12px 0 0;">
-        <span>Metrics</span>
-      </mat-toolbar>
-  <apx-chart
-    #chart
-    [series]="chartOptions.series"
-    [chart]="chartOptions.chart"
-    [title]="chartOptions.title"
-    [xaxis]="chartOptions.xaxis">
-  </apx-chart>
+<mat-toolbar color="primary" style="border-radius: 12px 12px 0 0;">
+  <span>Metrics Dashboard</span>
+</mat-toolbar>
+
+<div class="charts-container">
+  <div class="chart-card">
+    <apx-chart
+      [series]="ramChartOptions.series"
+      [chart]="ramChartOptions.chart"
+      [labels]="ramChartOptions.labels"
+      [title]="ramChartOptions.title">
+    </apx-chart>
+  </div>
+
+  <div class="chart-card">
+    <apx-chart
+      [series]="cpuChartOptions.series"
+      [chart]="cpuChartOptions.chart"
+      [labels]="cpuChartOptions.labels"
+      [title]="cpuChartOptions.title">
+    </apx-chart>
+  </div>
 </div>

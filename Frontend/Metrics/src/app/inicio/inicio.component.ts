@@ -1,69 +1,111 @@
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import {
+  ApexChart,
+  ApexNonAxisChartSeries,
+  ApexTitleSubtitle,
+  NgApexchartsModule
+} from 'ng-apexcharts';
+import { MetricsService, Metrics } from '../services/metrics.service';
 import { CommonModule } from '@angular/common';
-import { Component, ViewChild, AfterViewInit } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatDialogModule } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { ApexAxisChartSeries, ApexChart, ApexXAxis, ApexTitleSubtitle, NgApexchartsModule } from 'ng-apexcharts';
-import { ChartComponent } from 'ng-apexcharts';
 
-export type ChartOptions = {
-  series: ApexAxisChartSeries;
+export interface ChartOptions {
+  series: ApexNonAxisChartSeries;
   chart: ApexChart;
-  xaxis: ApexXAxis;
+  labels: string[];
   title: ApexTitleSubtitle;
-};
+}
 
 @Component({
   selector: 'app-inicio',
-  templateUrl: './inicio.component.html',
-  styleUrls: ['./inicio.component.scss'],
-  imports:[CommonModule, NgApexchartsModule, 
+  standalone: true,
+  imports: [
     CommonModule,
-    FormsModule,
-    MatButtonModule,
-    MatCardModule,
-    MatDatepickerModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatInputModule,
-    MatToolbarModule,
-    ReactiveFormsModule,
-    MatDialogModule
-  ]
+    NgApexchartsModule,
+    MatToolbarModule
+  ],
+  templateUrl: './inicio.component.html',
+  styleUrls: ['./inicio.component.scss']
 })
-export class InicioComponent implements AfterViewInit {
-  @ViewChild('chart') chart!: ChartComponent; // Asignación de la referencia al componente de ApexCharts
-  public chartOptions: Partial<ChartOptions> | any;
+export class InicioComponent implements OnInit, OnDestroy {
+  public ramChartOptions: ChartOptions = {
+    series: [0, 100],
+    chart: {
+      type: 'donut',
+      width: 380
+    },
+    labels: ['RAM Usada', 'RAM Libre'],
+    title: {
+      text: 'RAM: 0% en uso'
+    }
+  };
 
-  constructor() {
-    this.chartOptions = {
-      series: [
-        {
-          name: 'My-series',
-          data: [10, 41, 35, 51, 49, 62, 69, 91, 148]
-        }
-      ],
-      chart: {
-        height: 350,
-        type: 'bar'
-      },
-      title: {
-        text: 'My First Angular Chart'
-      },
-      xaxis: {
-        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep']
-      }
-    };
+  public cpuChartOptions: ChartOptions = {
+    series: [0, 100],
+    chart: {
+      type: 'donut',
+      width: 380
+    },
+    labels: ['CPU Usada', 'CPU Libre'],
+    title: {
+      text: 'CPU: 0% en uso'
+    }
+  };
+
+  private intervalId: any;
+
+  constructor(
+    private metricsService: MetricsService,
+    private cdr: ChangeDetectorRef
+  ) {}
+
+  ngOnInit(): void {
+    this.loadMetrics();
+    this.intervalId = setInterval(() => this.loadMetrics(), 5000);
   }
 
-  ngAfterViewInit() {
-    // Verificar si el gráfico está correctamente inicializado
-    console.log('Chart initialized:', this.chart);
+  ngOnDestroy(): void {
+    clearInterval(this.intervalId);
+  }
+
+  loadMetrics(): void {
+    this.metricsService.getUltimaMetrica().subscribe({
+      next: (data: Metrics) => {
+        const { ram, cpu } = data;
+
+        const ramUso = Number(ram.uso);
+        const ramTotal = Number(ram.total);
+        const ramPorcentaje = ramTotal > 0
+          ? +(ramUso / ramTotal * 100).toFixed(2)
+          : 0;
+
+        const cpuUso = Number(cpu.uso);
+        const cpuTotal = Number(cpu.total);
+        const cpuPorcentaje = cpuTotal > 0
+          ? +(cpuUso / cpuTotal * 100).toFixed(2)
+          : 0;
+
+        this.ramChartOptions = {
+          ...this.ramChartOptions,
+          series: [ramPorcentaje, 100 - ramPorcentaje],
+          title: {
+            text: `RAM: ${ramPorcentaje}% en uso`
+          }
+        };
+
+        this.cpuChartOptions = {
+          ...this.cpuChartOptions,
+          series: [cpuPorcentaje, 100 - cpuPorcentaje],
+          title: {
+            text: `CPU: ${cpuPorcentaje}% en uso`
+          }
+        };
+
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error al cargar métricas', err);
+      }
+    });
   }
 }
