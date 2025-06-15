@@ -7,12 +7,12 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
 )
 
-// Estructuras para las métricas de RAM y CPU
 type RamInfo struct {
 	Total      uint64 `json:"total"`
 	Libre      uint64 `json:"libre"`
@@ -21,19 +21,20 @@ type RamInfo struct {
 }
 
 type CpuInfo struct {
-	PorcentajeUso uint64 `json:"porcentajeUso"`
+	Total      uint64 `json:"total"`
+	Uso        uint64 `json:"uso"`
+	Libre      uint64 `json:"libre"`
+	Porcentaje uint64 `json:"porcentaje"`
 }
 
-// Estructura para unificar los resultados de RAM y CPU
+
 type MetricsPayload struct {
 	CPU CpuInfo `json:"cpu"`
 	RAM RamInfo `json:"ram"`
 }
 
-// Canal para pasar las métricas
 var metricsChan = make(chan MetricsPayload, 1)
 
-// Función para leer los archivos JSON de métricas
 func leerArchivoJSON(path string, target interface{}) error {
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
@@ -42,7 +43,6 @@ func leerArchivoJSON(path string, target interface{}) error {
 	return json.Unmarshal(data, target)
 }
 
-// Función para recolectar las métricas de RAM
 func recolectorRam(ch chan<- RamInfo) {
 	for {
 		var ram RamInfo
@@ -51,11 +51,10 @@ func recolectorRam(ch chan<- RamInfo) {
 			log.Println("Error leyendo módulo RAM:", err)
 		}
 		ch <- ram
-		time.Sleep(5 * time.Second) // Recolectar cada 5 segundos
+		time.Sleep(5 * time.Second)
 	}
 }
 
-// Función para recolectar las métricas de CPU
 func recolectorCpu(ch chan<- CpuInfo) {
 	for {
 		var cpu CpuInfo
@@ -64,44 +63,38 @@ func recolectorCpu(ch chan<- CpuInfo) {
 			log.Println("Error leyendo módulo CPU:", err)
 		}
 		ch <- cpu
-		time.Sleep(5 * time.Second) // Recolectar cada 5 segundos
+		time.Sleep(5 * time.Second)
 	}
 }
 
-// Función que unifica las métricas de RAM y CPU y las envía por el canal
 func unificarMetricas(ramCh <-chan RamInfo, cpuCh <-chan CpuInfo) {
 	for {
 		ram := <-ramCh
 		cpu := <-cpuCh
-
-		// Unificando las métricas
 		metrics := MetricsPayload{
 			CPU: cpu,
 			RAM: ram,
 		}
-
-		// Enviar las métricas por el canal
 		metricsChan <- metrics
 	}
 }
 
-// Función para enviar las métricas a la API
 func enviarAPI() {
+	apiHost := os.Getenv("API_HOST")
+	apiPort := os.Getenv("API_PORT")
+	apiURL := fmt.Sprintf("http://%s:%s/metrics", apiHost, apiPort)
+
 	for {
 		time.Sleep(5 * time.Second)
-
-		// Obtener las métricas del canal
 		metrics := <-metricsChan
 
-		// Convertir a JSON
 		jsonData, err := json.Marshal(metrics)
 		if err != nil {
 			log.Println("Error serializando JSON:", err)
 			continue
 		}
 
-		// Enviar las métricas a la API
-		resp, err := http.Post("http://localhost:3000/metrics", "application/json", bytes.NewBuffer(jsonData))
+		resp, err := http.Post(apiURL, "application/json", bytes.NewBuffer(jsonData))
 		if err != nil {
 			log.Println("Error enviando a la API:", err)
 			continue
@@ -113,21 +106,18 @@ func enviarAPI() {
 }
 
 func main() {
-	// Crear los canales para las métricas de RAM y CPU
 	ramCh := make(chan RamInfo)
 	cpuCh := make(chan CpuInfo)
 
-	// Iniciar las goroutines para la recolección de métricas
 	go recolectorRam(ramCh)
 	go recolectorCpu(cpuCh)
 	go unificarMetricas(ramCh, cpuCh)
 	go enviarAPI()
 
-	// Iniciar el servidor con Fiber
 	app := fiber.New()
 
 	app.Get("/metrics", func(c *fiber.Ctx) error {
-		metrics := <-metricsChan // Obtener las métricas del canal
+		metrics := <-metricsChan
 		return c.JSON(metrics)
 	})
 
@@ -135,7 +125,11 @@ func main() {
 		return c.SendString("Recolector en ejecución. Endpoint disponible en /metrics ✅ ")
 	})
 
-	port := 8080
-	fmt.Printf("Servidor Fiber escuchando en http://localhost:%d\n", port)
-	log.Fatal(app.Listen(fmt.Sprintf(":%d", port)))
+	port := os.Getenv("RECOLECTOR_PORT")
+	if port == "" {
+		port = "8080"
+	}
+
+	fmt.Printf("Servidor Fiber escuchando en http://localhost:%s\n", port)
+	log.Fatal(app.Listen(":" + port))
 }
