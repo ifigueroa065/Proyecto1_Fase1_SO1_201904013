@@ -8,8 +8,9 @@ const PORT = process.env.PORT || 3000;
 
 // Permitir CORS desde el frontend (ajustable para producción)
 app.use(cors({
-  origin: '*', // o usa 'http://frontend:4200' en entorno dockerizado
-  credentials: true
+  origin: '*', // O permite solo tu frontend: 'http://localhost:4200'
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type']
 }));
 
 app.use(bodyParser.json());
