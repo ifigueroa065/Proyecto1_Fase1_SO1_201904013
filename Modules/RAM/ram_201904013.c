@@ -13,27 +13,30 @@ MODULE_DESCRIPTION("Modulo RAM - Monitor de Servicios Linux");
 static int escribir_ram(struct seq_file *archivo, void *v)
 {
     struct sysinfo info;
-    unsigned long total, libre, uso, porcentaje;
+    unsigned long long total, libre, uso, porcentaje;
 
     si_meminfo(&info);
 
-    // Convertimos de bytes a KB
+    // Convertir a KB
     total = (info.totalram * info.mem_unit) / 1024;
     libre = (info.freeram * info.mem_unit) / 1024;
     uso = total - libre;
 
     if (total > 0) {
-        porcentaje = (uso * 10000) / total;  // 0 - 10000 (equivale a 100.00%)
+        porcentaje = (uso * 10000) / total;  // Escalado: 0–10000 → 100.00%
     } else {
         porcentaje = 0;
     }
 
-    seq_printf(archivo, "{\n");
-    seq_printf(archivo, "  \"total\": %lu,\n", total);
-    seq_printf(archivo, "  \"libre\": %lu,\n", libre);
-    seq_printf(archivo, "  \"uso\": %lu,\n", uso);
-    seq_printf(archivo, "  \"porcentaje\": %lu\n", porcentaje);
-    seq_printf(archivo, "}\n");
+    seq_printf(archivo,
+        "{\n"
+        "  \"total\": %llu,\n"
+        "  \"uso\": %llu,\n"
+        "  \"libre\": %llu,\n"
+        "  \"porcentaje\": %llu\n"
+        "}\n",
+        total, uso, libre, porcentaje
+    );
 
     return 0;
 }

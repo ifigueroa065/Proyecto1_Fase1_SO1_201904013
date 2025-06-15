@@ -16,21 +16,38 @@ static int escribir_cpu(struct seq_file *archivo, void *v)
     struct task_struct *task;
     u64 total_cpu = 0;
     u64 uso_cpu = 0;
+    u64 libre_cpu = 0;
     u64 porcentaje = 0;
 
+    // Tiempo total de uso de todos los procesos en nanosegundos
     for_each_process(task)
     {
         uso_cpu += task->utime + task->stime;
     }
 
+    // Tiempo total del sistema desde el arranque en nanosegundos
     total_cpu = ktime_to_ns(ktime_get());
 
     if (total_cpu > 0)
     {
-        porcentaje = (uso_cpu * 10000) / total_cpu; // Escala para mostrar como 0–10000
+        porcentaje = (uso_cpu * 10000) / total_cpu; // 0–10000 = 0.00%–100.00%
+        libre_cpu = total_cpu - uso_cpu;
+
+        // Convertir a milisegundos para hacerlo más legible
+        total_cpu /= 1000000;
+        uso_cpu /= 1000000;
+        libre_cpu /= 1000000;
     }
 
-    seq_printf(archivo, "{\n  \"porcentajeUso\": %llu\n}\n", porcentaje);
+    seq_printf(archivo,
+               "{\n"
+               "  \"total\": %llu,\n"
+               "  \"uso\": %llu,\n"
+               "  \"libre\": %llu,\n"
+               "  \"porcentaje\": %llu\n"
+               "}\n",
+               total_cpu, uso_cpu, libre_cpu, porcentaje);
+
     return 0;
 }
 
