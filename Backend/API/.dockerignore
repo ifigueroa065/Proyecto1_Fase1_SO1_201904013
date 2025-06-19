@@ -1,0 +1,8 @@
+# Ignorar node_modules
+node_modules
+
+# Ignorar cualquier archivo que no se necesita en la imagen, como logs o archivos temporales
+*.log
+*.md
+.git
+.gitignore
