@@ -40,6 +40,8 @@ Este proyecto tiene como objetivo aplicar los conocimientos adquiridos en la Uni
 6. **Docker + Docker Compose**: Conteneriza todos los servicios y facilita el despliegue.
 7. **Base de Datos**: Implementada como contenedor, almacena datos persistentes sobre RAM y CPU.
 
+![arquitectura](assets/arquitecturaF1.png)
+
 ---
 
 ## ⚙️ Funcionalidades Principales

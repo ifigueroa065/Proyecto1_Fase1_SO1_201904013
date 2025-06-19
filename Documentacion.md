@@ -272,9 +272,13 @@ El frontend está construido en **Angular** y se encuentra en la carpeta **`Fron
 ### **Vista Principal**
 La vista principal se conecta a la API y muestra las métricas del sistema en tiempo real.
 
+![Frontend](assets/dashboard.png)
+
 ## **DB - PostgreSQL**
 
 La base de datos **PostgreSQL** almacena las métricas de **CPU** y **RAM**. Se utiliza el siguiente script en **`DB/scripts/pgagent_extension.sh`** para crear la extensión **pgAgent** y la base de datos. Además, se configura la tabla donde se almacenarán las métricas.
+
+![conexiondb](assets/dbeaver.png)
 
 ## **Bash Scripts**
 
