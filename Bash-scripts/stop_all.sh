@@ -3,25 +3,22 @@
 echo "Deteniendo procesos en segundo plano..."
 
 # Detener API NodeJS
-pkill -f "node server.js"
-
-# Detener Recolector en Go (si se usó go run)
-pkill -f "go run main.go"
-
-# Detener Recolector si fue compilado (ej: ./recolector)
-pkill -f "./recolector"
-
-# Si se guardó un PID del recolector
-if [ -f ../Backend/Recolector/recolector.pid ]; then
-  echo "Matando recolector por PID..."
-  kill $(cat ../Backend/Recolector/recolector.pid) 2>/dev/null
-  rm ../Backend/Recolector/recolector.pid
+pid_node=$(ps aux | grep "node server.js" | grep -v "grep" | awk '{print $2}')
+if [ ! -z "$pid_node" ]; then
+  echo "Matando proceso NodeJS (API) con PID $pid_node..."
+  kill -9 $pid_node
+else
+  echo "No se encontró proceso NodeJS"
 fi
 
-echo "Eliminando contenedores de stress..."
-for i in $(seq 1 10); do
-  docker rm -f stress$i 2>/dev/null || true
-done
+# Detener Recolector Go
+pid_go=$(ps aux | grep "main" | grep -v "grep" | awk '{print $2}')
+if [ ! -z "$pid_go" ]; then
+  echo "Matando proceso Go (Recolector) con PID $pid_go..."
+  kill -9 $pid_go
+else
+  echo "No se encontró proceso GO!"
+fi
 
 echo "Descargando módulos del kernel..."
 if lsmod | grep -q "cpu_201904013"; then
