@@ -1,13 +1,21 @@
 .charts-container {
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 2rem;
   flex-wrap: wrap;
-  padding: 1rem;
+  justify-content: center;
+  gap: 2rem;
+  padding: 2rem;
 }
 
-.chart-box {
-  flex: 1 1 400px;
-  max-width: 450px;
+.chart-card {
+  background-color: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  padding: 1rem;
+  transition: transform 0.3s ease-in-out;
+  width: 380px;
+  max-width: 100%;
+}
+
+.chart-card:hover {
+  transform: scale(1.02);
 }
