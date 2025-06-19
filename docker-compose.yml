@@ -1,24 +1,20 @@
 services:
   db:
-    build:
-      context: ./DB
-      dockerfile: Dockerfile
+    image: ifigueroa065/db-metrics:1.0.0  # Usar la imagen con el tag 1.0.0
     container_name: dbmetrics
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ./DB/pg1-path:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     networks:
       - metricsnet
 
   api:
-    build:
-      context: ./Backend/API
-      dockerfile: Dockerfile
+    image: ifigueroa065/api201904013:1.0.0  # Usar la imagen con el tag 1.0.0
     container_name: api-metrics
     environment:
       DB_HOST: db
@@ -34,9 +30,7 @@ services:
       - metricsnet
 
   recolector:
-    build:
-      context: ./Backend/Recolector
-      dockerfile: Dockerfile
+    image: ifigueroa065/recolector:1.0.0  # Usar la imagen con el tag 1.0.0
     container_name: go-recolector
     environment:
       API_HOST: api
@@ -50,9 +44,7 @@ services:
       - metricsnet
 
   frontend:
-    build:
-      context: ./Frontend/Metrics
-      dockerfile: Dockerfile
+    image: ifigueroa065/frontend-metrics:1.0.0  # Usar la imagen con el tag 1.0.0
     container_name: angular-metrics
     ports:
       - "${FRONTEND_PORT}:80"
