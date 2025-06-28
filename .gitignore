@@ -1,0 +1,76 @@
+# Ignore la carpeta de dependencias y compilación para el proyecto de Go
+/bin/
+/obj/
+/vendor/
+
+# Dependencias de Go (mod y sum)
+go.sum
+go.mod
+
+# Archivos de compilación de Go
+*.out
+*.exe
+*.test
+
+# Archivos generados por Docker
+*.tar
+docker-compose.override.yml
+
+# Ignorar el directorio del entorno virtual de Python
+venv/
+
+# Archivos de logs
+*.log
+
+# Archivos de configuración del IDE (Visual Studio Code)
+.vscode/
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+
+# Node modules (si usas Node.js para frontend)
+node_modules/
+
+# Archivos de build de React
+/build/
+/dist/
+/*.log
+
+# Archivos de dependencias de Locust
+*.db
+*.pid
+*.log
+
+# Archivos temporales
+*.swp
+*.swo
+
+# Directorios de compilación de los módulos del kernel
+/lib/modules/
+
+
+# Archivos compilados de módulos del kernel
+FASE2/Modules/**/*.ko
+FASE2/Modules/**/*.mod.*
+FASE2/Modules/**/Module.symvers
+FASE2/Modules/**/*.o
+FASE2/Modules/**/*.order
+FASE2/Modules/**/*.cmd
+FASE2/Modules/**/*.tmp_versions
+
+# Archivos swap/backup de editores
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Archivos generados de sistema
+*.out
+*.exe
+
+#Variables de entorno
+*.env
+
+
