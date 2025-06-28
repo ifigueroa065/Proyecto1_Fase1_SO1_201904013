@@ -17,6 +17,9 @@ db_config = {
 def save_metrics():
     data = request.get_json()
 
+    # Agregar el campo "api" al JSON con valor "Python"
+    data['api'] = 'Python'
+
     # Conectar a la base de datos MySQL
     try:
         conn = mysql.connector.connect(**db_config)
@@ -24,8 +27,8 @@ def save_metrics():
 
         # Preparar la consulta para insertar las métricas
         query = """
-        INSERT INTO metrics (cpu_usage, ram_usage, processes_running, total_processes, processes_sleeping, processes_zombie, processes_stopped, timestamp)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+        INSERT INTO metrics (cpu_usage, ram_usage, processes_running, total_processes, processes_sleeping, processes_zombie, processes_stopped, timestamp, api)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
         """
         
         values = (
@@ -36,7 +39,8 @@ def save_metrics():
             data['procesos']['procesos_durmiendo'],
             data['procesos']['procesos_zombie'],
             data['procesos']['procesos_parados'],
-            data['hora']
+            data['hora'],
+            data['api']  # Insertar el campo 'api'
         )
 
         cursor.execute(query, values)
