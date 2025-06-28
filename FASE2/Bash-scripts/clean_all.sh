@@ -2,21 +2,7 @@
 
 set -e
 
-# Detener y eliminar contenedores de stress
-echo "Deteniendo y eliminando contenedores de stress..."
-for i in $(seq 1 5); do
-  sudo docker stop stress$i 2>/dev/null || true
-  sudo docker rm -f stress$i 2>/dev/null || true
-done
-echo "✅ Contenedores stress eliminados."
 
-# Detener y eliminar contenedores de docker-compose
-echo "Deteniendo y eliminando contenedores de docker-compose..."
-cd ../
-sudo docker compose down --remove-orphans
-cd - > /dev/null
-
-echo "✅ Contenedores y redes docker-compose eliminados."
 
 # Descargando módulos del kernel
 echo "Descargando módulos del kernel..."
@@ -42,12 +28,8 @@ fi
 echo "Limpiando compilación de módulos..."
 (cd ../Modules/CPU && make clean)
 (cd ../Modules/RAM && make clean)
-(cd ../Modules/Procesos && make clean)
+(cd ../Modules/PROCESOS && make clean)
 
-# Eliminar logs generados
-echo "Eliminando logs residuales..."
-rm -f ../Backend/Recolector/recolector.log
-rm -f ../Backend/API/api.log
 
 # Verificar puertos ocupados (3000 para la API, 8080 para el recolector)
 echo "Verificando puertos ocupados..."
