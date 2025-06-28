@@ -17,12 +17,15 @@ const db = mysql.createConnection({
 
 // Ruta para recibir las métricas y almacenarlas en la base de datos
 app.post("/metrics", (req, res) => {
-  const data = req.body;
+  let data = req.body;
+
+  // Agregar el campo "api" con valor "NodeJS"
+  data.api = "NodeJS";
 
   // Preparar la consulta para insertar las métricas
   const query = `
-    INSERT INTO metrics (cpu_usage, ram_usage, processes_running, total_processes, processes_sleeping, processes_zombie, processes_stopped, timestamp)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO metrics (cpu_usage, ram_usage, processes_running, total_processes, processes_sleeping, processes_zombie, processes_stopped, timestamp, api)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
   const values = [
@@ -34,6 +37,7 @@ app.post("/metrics", (req, res) => {
     data.procesos.procesos_zombie,
     data.procesos.procesos_parados,
     data.hora,
+    data.api // Insertar el campo 'api'
   ];
 
   db.query(query, values, (err, result) => {
