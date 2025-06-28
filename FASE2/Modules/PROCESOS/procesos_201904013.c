@@ -23,7 +23,8 @@ static int escribir_procesos(struct seq_file *archivo, void *v)
     for_each_process(task) {
         total_procesos++;
 
-        switch (task->state) {
+        // Cambiar task->state por task->exit_state (si corresponde con tu versión de kernel)
+        switch (task->exit_state) {  // Aquí cambiamos `state` por `exit_state`
             case TASK_RUNNING:
                 procesos_corriendo++;
                 break;
@@ -31,7 +32,7 @@ static int escribir_procesos(struct seq_file *archivo, void *v)
             case TASK_UNINTERRUPTIBLE:
                 procesos_durmiendo++;
                 break;
-            case TASK_ZOMBIE:
+            case EXIT_ZOMBIE:  // Reemplazar TASK_ZOMBIE por EXIT_ZOMBIE si la versión del kernel lo requiere
                 procesos_zombie++;
                 break;
             case TASK_STOPPED:
@@ -63,7 +64,7 @@ static int abrir(struct inode *inode, struct file *file)
     return single_open(file, escribir_procesos, NULL);
 }
 
-static struct proc_ops operaciones = {
+static const struct proc_ops operaciones = {
     .proc_open = abrir,
     .proc_read = seq_read,
     .proc_lseek = seq_lseek,
