@@ -37,6 +37,7 @@ type MetricsPayload struct {
 	CPU      CpuInfo      `json:"cpu"`
 	RAM      RamInfo      `json:"ram"`
 	Procesos ProcesosInfo `json:"procesos"`
+	Hora     string       `json:"hora"` // Campo para la hora
 }
 
 // Canal de métricas
@@ -104,11 +105,18 @@ func unificarMetricas(ramCh <-chan RamInfo, cpuCh <-chan CpuInfo, procesosCh <-c
 		ram := <-ramCh
 		cpu := <-cpuCh
 		procesos := <-procesosCh
+		
+		// Obtener la hora actual y formatearla
+		hora := time.Now().Format(time.RFC3339)  // Formato ISO 8601: 2025-06-28T15:30:00Z
+
+		// Crear el objeto de métricas con la hora
 		metrics := MetricsPayload{
 			CPU:      cpu,
 			RAM:      ram,
 			Procesos: procesos,
+			Hora:     hora,  // Añadir la hora actual
 		}
+		
 		metricsChan <- metrics
 	}
 }
@@ -132,7 +140,7 @@ func main() {
 	// Endpoint para mostrar métricas
 	app.Get("/metrics", func(c *fiber.Ctx) error {
 		metrics := <-metricsChan
-		return c.JSON(metrics)  // Aquí se expone el JSON de métricas a quien haga la petición GET
+		return c.JSON(metrics)  // El JSON ahora contiene el campo "hora"
 	})
 
 	// Endpoint raíz
