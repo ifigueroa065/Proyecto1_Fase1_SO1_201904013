@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: node-socket
-        image: docker.io/ifigueroa065/api-node-socket:v1
+        image: docker.io/ifigueroa065/api-node-socket:v2
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
