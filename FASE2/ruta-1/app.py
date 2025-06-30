@@ -17,7 +17,7 @@ db_config = {
 @app.route('/metrics', methods=['POST'])
 def save_metrics():
     data = request.get_json()
-
+    print(f"Received data: {data}")  # Para depuración
     # Agregar el campo "api" al JSON con valor "Python"
     data['api'] = 'Python'
 

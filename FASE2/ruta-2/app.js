@@ -18,7 +18,7 @@ const db = mysql.createConnection({
 // Ruta para recibir las métricas y almacenarlas en la base de datos
 app.post("/metrics", (req, res) => {
   let data = req.body;
-
+  console.log(`Received data: ${JSON.stringify(data)}`); // Para depuración
   // Agregar el campo "api" con valor "NodeJS"
   data.api = "NodeJS";
 
