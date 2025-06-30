@@ -22,6 +22,11 @@ app.post("/metrics", (req, res) => {
   // Agregar el campo "api" con valor "NodeJS"
   data.api = "NodeJS";
 
+  // Asegurar que la fecha esté en formato MySQL (YYYY-MM-DD HH:MM:SS)
+  if (data.hora) {
+    data.hora = data.hora.replace("T", " ").replace("Z", "");
+  }
+
   // Preparar la consulta para insertar las métricas
   const query = `
     INSERT INTO metrics (cpu_usage, ram_usage, processes_running, total_processes, processes_sleeping, processes_zombie, processes_stopped, timestamp, api)
@@ -37,7 +42,7 @@ app.post("/metrics", (req, res) => {
     data.procesos.procesos_zombie,
     data.procesos.procesos_parados,
     data.hora,
-    data.api // Insertar el campo 'api'
+    data.api
   ];
 
   db.query(query, values, (err, result) => {
