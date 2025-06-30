@@ -16,5 +16,5 @@ COPY . .
 # Exponer el puerto que usará la app
 EXPOSE 8080
 
-# Comando para ejecutar tu servidor
-CMD ["node", "index.js"]
+# Comando para ejecutar tu servidor (ajustado a app.js)
+CMD ["node", "app.js"]
