@@ -51,6 +51,6 @@ spec:
     app: python-api
   ports:
     - protocol: TCP
-      port: 3000
-      targetPort: 3000
+      port: 5050
+      targetPort: 5050
   type: LoadBalancer
