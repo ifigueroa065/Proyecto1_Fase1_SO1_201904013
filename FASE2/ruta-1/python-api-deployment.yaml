@@ -15,7 +15,8 @@ spec:
     spec:
       containers:
       - name: python-api
-        image: docker.io/ifigueroa065/api-python-metrics:v2
+        image: docker.io/ifigueroa065/api-python-metrics:v4
+        imagePullPolicy: Always
         ports:
         - containerPort: 5050
         env:
@@ -50,6 +51,6 @@ spec:
     app: python-api
   ports:
     - protocol: TCP
-      port: 80
-      targetPort: 5050
+      port: 3000
+      targetPort: 3000
   type: LoadBalancer
