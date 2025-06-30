@@ -1,0 +1,43 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-nodejs
+  namespace: so1-fase2
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST"
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          - path: /node/(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: node-api-service
+                port:
+                  number: 3000
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-python
+  namespace: so1-fase2
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST"
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          - path: /python/(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: python-api-service
+                port:
+                  number: 5050
+
