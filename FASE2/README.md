@@ -211,6 +211,15 @@ kubectl delete -f file.yaml
 
 ---
 
+## Conexión a bd cloud
+
+![conecction](assets/conexiondb.png)
+
+## Test de Socket con Postman
+
+![socket](assets/websocket.png)
+
+
 ## Referencias y Enlaces Útiles
 
 - [Instalar GCP CLI](https://cloud.google.com/sdk/docs/install)
