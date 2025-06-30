@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: python-api
+  namespace: so1-fase2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: python-api
+  template:
+    metadata:
+      labels:
+        app: python-api
+    spec:
+      containers:
+      - name: python-api
+        image: docker.io/ifigueroa065/api-python-metrics:v2
+        ports:
+        - containerPort: 5050
+        env:
+        - name: DB_HOST
+          valueFrom:
+            secretKeyRef:
+              name: python-api-db-secret
+              key: DB_HOST
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: python-api-db-secret
+              key: DB_USER
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: python-api-db-secret
+              key: DB_PASSWORD
+        - name: DB_NAME
+          valueFrom:
+            secretKeyRef:
+              name: python-api-db-secret
+              key: DB_NAME
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: python-api-service
+  namespace: so1-fase2
+spec:
+  selector:
+    app: python-api
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5050
+  type: LoadBalancer
