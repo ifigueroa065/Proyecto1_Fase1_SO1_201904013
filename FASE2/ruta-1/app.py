@@ -8,7 +8,7 @@ app = Flask(__name__)
 db_config = {
     'host': os.getenv('DB_HOST', 'localhost'),
     'user': os.getenv('DB_USER', 'root'),
-    'password': os.getenv('DB_PASSWORD', 'yourpassword'),
+    'password': os.getenv('DB_PASSWORD', 'admin123'),
     'database': os.getenv('DB_NAME', 'metrics_db')
 }
 
@@ -55,4 +55,4 @@ def save_metrics():
         return jsonify({"error": f"Error: {err}"}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=8080)
+    app.run(debug=True, host='0.0.0.0', port=5050)
